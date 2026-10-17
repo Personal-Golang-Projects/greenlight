@@ -39,16 +39,10 @@ func main() {
 		logger: logger,
 	}
 
-	// declare new servemux
-	mux := http.NewServeMux()
-
-	// add health check api
-	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
-
 	// declare a http server with some settings
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      mux,
+		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

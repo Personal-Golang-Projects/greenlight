@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"greenlight.chitranshoo.net/internal/models"
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,5 +19,17 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	fmt.Fprintf(w, "show details of movie having id %d\n", id)
+	movie := models.Movie{
+		ID:        id,
+		CreatedAt: time.Now(),
+		Title:     "Avatar",
+		Genres:    []string{"science-fiction"},
+		Version:   1,
+	}
+
+	err = app.writeJSON(w, http.StatusOK, movie, nil)
+	if err != nil {
+		app.logger.Error(err.Error())
+		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+	}
 }

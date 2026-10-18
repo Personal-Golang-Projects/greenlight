@@ -47,12 +47,3 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 
 	return nil
 }
-
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any) error {
-	err := json.UnmarshalRead(r.Body, dst)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

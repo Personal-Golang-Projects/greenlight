@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -18,13 +17,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
-		var badRequestErr *badRequestError
-		switch {
-		case errors.As(err, &badRequestErr):
-			app.badRequestResponse(w, r, err)
-		default:
-			app.serverErrorResponse(w, r, err)
-		}
+		app.badRequestResponse(w, r, err)
 		return
 	}
 

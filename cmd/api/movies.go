@@ -1,15 +1,48 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"greenlight.chitranshoo.net/internal/models"
+	"greenlight.chitranshoo.net/internal/validator"
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create a new movie")
+	// separate input struct so clients can't set ID, CreatedAt or Version
+	var input struct {
+		Title  string   `json:"title"`
+		Year   int      `json:"year"`
+		Genres []string `json:"genres"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		var badRequestErr *badRequestError
+		switch {
+		case errors.As(err, &badRequestErr):
+			app.badRequestResponse(w, r, err)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	movie := &models.Movie{
+		Title:  input.Title,
+		Year:   input.Year,
+		Genres: input.Genres,
+	}
+
+	v := validator.New()
+	if models.ValidateMovie(v, movie); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	fmt.Fprintf(w, "%+v\n", input)
 }
 
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {

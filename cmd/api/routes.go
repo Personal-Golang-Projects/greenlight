@@ -22,6 +22,12 @@ func (app *application) routes() http.Handler {
 	// show a movie
 	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showMovieHandler)
 
+	// partially update a movie
+	router.HandlerFunc(http.MethodPatch, "/v1/movies/:id", app.updateMovieHandler)
+
+	// delete a movie
+	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
+
 	// wrap panic recover middleware and return router instance
 	return app.recoverPanic(router)
 }
